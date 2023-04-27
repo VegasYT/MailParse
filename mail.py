@@ -1,13 +1,13 @@
 import imaplib
 import email
 import time
-import os
+from email.header import decode_header
 
 
 # Задаем параметры подключения к почтовому серверу
 host = "imap.mail.ru"
-username = "dqwdqwdqwdwq1@mail.ru"
-password = 'pass'
+username = "login@mail.ru"
+password = 'pass(для внешних приложений)'
 
 print('Проверка почты, пока сообщений нет. Ждем...')
 while True:
@@ -17,7 +17,6 @@ while True:
 
     # Выбираем папку "входящие сообщения"
     mail.select('inbox')
-    
     # Ищем сообщения
     _, search_data = mail.search(None, 'UNSEEN')  # Ищем только непрочитанные сообщения
 
@@ -28,7 +27,6 @@ while True:
     if not msg_ids:
         time.sleep(3)  # Ждем 5 секунд и проверяем заново
         continue
-
     # Если сообщение есть, получаем его содержимое
     msg_id = msg_ids[-1]  # Берем последнее сообщение из списка
     _, msg_data = mail.fetch(msg_id, '(RFC822)')
@@ -40,10 +38,8 @@ while True:
     raw_msg = msg_data[0][1]
     msg = email.message_from_bytes(raw_msg)
 
-
     # Получаем отправителя
     sender = msg['from']
-
 
     # Преобразуем данные в объект класса EmailMessage
     email_message = email.message_from_bytes(raw_email)
@@ -63,11 +59,19 @@ while True:
         # Если сообщение содержит только текст, то берем его
         body = msg.get_payload(decode=True).decode('utf-8')
 
+    # заголовок темы письма
+    subject_header = msg['Subject'];
+    # декодирование темы письма
+    decoded_subject = email.header.decode_header(subject_header)[0][0].decode('utf-8')
+
+
 
     MessText = body
     MessAdr = email_addr
+    MessTopic = decoded_subject
 
-    print("\nПРИШЛО НОВОЕ ПИСЬМО:\n" + "От: " + MessAdr + "\nТекст письма: " + MessText)
+    print("\nПРИШЛО НОВОЕ ПИСЬМО:\n" + "От: " + MessAdr + "\nТема письма: " + MessTopic + "\nТекст письма: " + MessText)
+
 
 
 # Закрываем соединение
