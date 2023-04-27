@@ -9,15 +9,15 @@ host = "imap.mail.ru"
 username = "dqwdqwdqwdwq1@mail.ru"
 password = 'pass'
 
-# Подключаемся к почтовому серверу
-mail = imaplib.IMAP4_SSL(host)
-mail.login(username, password)
-
-# Выбираем папку "входящие сообщения"
-mail.select('inbox')
-
 print('Проверка почты, пока сообщений нет. Ждем...')
 while True:
+    # Подключаемся к почтовому серверу
+    mail = imaplib.IMAP4_SSL(host)
+    mail.login(username, password)
+
+    # Выбираем папку "входящие сообщения"
+    mail.select('inbox')
+    
     # Ищем сообщения
     _, search_data = mail.search(None, 'UNSEEN')  # Ищем только непрочитанные сообщения
 
